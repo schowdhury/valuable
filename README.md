@@ -18,10 +18,12 @@ Role.admin.id == 1 #true
 ```ruby
 class Role < ActiveRecord::Base
   
-  def self.const_missing(const)
-    if const == :ROLES
-      Role.const_set(:ROLES, Role.all.collect(&:name).uniq.compact)
-      Role::ROLES
+  def self.method_missing(const)
+    unless defined? ROLES
+      Role.const_set(:ROLES, Role.all.collect(&:name).uniq.compact.collect(&:to_sym))
+    end
+    if Role::ROLES.include?(const)
+      Role.where(name: const.to_s).first
     else
       super
     end
