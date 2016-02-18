@@ -3,8 +3,9 @@ valuable
 
 This caches all the values from the db on initialize and makes them availabe as class methods, so for a table like
 
-Role
-id | name 
+###Role
+id | name
+---|:---|:---
 1  | admin
 2  | employee
 
