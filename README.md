@@ -17,18 +17,18 @@ Role.employee
 Role.admin.id == 1 #true
 
 ```ruby
-class Role < ActiveRecord::Base
-  
-  def self.method_missing(const)
+  def self.method_missing(method_sym, *arguments, &block)
     unless defined? ROLES
-      Role.const_set(:ROLES, Role.all.collect(&:name).uniq.compact.collect(&:to_sym))
+      roles_hash = Role.all.uniq.compact.inject({}) do |memo, i|
+        memo[i.name.to_sym] = i
+        memo
+      end
+      Role.const_set(:ROLES, roles_hash)
     end
-    if Role::ROLES.include?(const)
-      Role.where(name: const.to_s).first
+    if Role::ROLES.keys.include?(method_sym)
+      Role::ROLES[method_sym]
     else
       super
     end
   end
-
-end
 ```
